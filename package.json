@@ -1,6 +1,6 @@
 {
   "name": "@mission-ai/lark-cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Standalone Lark Open API CLI for AI Agents",
   "type": "module",
   "bin": {
@@ -11,7 +11,9 @@
     "test": "bun test tests/unit/",
     "test:e2e": "bun test tests/e2e/"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@types/bun": "^1.3.10",
