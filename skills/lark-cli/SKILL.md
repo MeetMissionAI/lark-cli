@@ -2,9 +2,9 @@
 name: lark-cli
 description: >
   Use the @mission-ai/lark-cli tool to interact with Lark/Feishu Open Platform APIs via command line.
-  This skill covers 7 modules (doc, wiki, chat, bitable, sheets, drive, calendar) with 72 commands total.
+  This skill covers 6 modules (doc, wiki, bitable, sheets, drive, calendar) with 68 commands total.
   Use this skill whenever you need to: read/write Lark documents, manage spreadsheets or multi-dimensional tables,
-  operate on wikis, manage group chats, handle file uploads/downloads/permissions, or manage calendars and events.
+  operate on wikis, handle file uploads/downloads/permissions, or manage calendars and events.
   Also use when the user mentions Feishu, Lark, 飞书, or any Lark workspace automation tasks.
 ---
 
@@ -39,6 +39,27 @@ Optionally, override the base URL for Feishu (China) deployments:
 ```bash
 export LARK_BASE_URL="https://open.feishu.cn/open-apis"   # default is larksuite.com
 ```
+
+## Ownership Transfer After Creation (Important)
+
+Because the CLI uses `tenant_access_token`, any resource created (doc, spreadsheet, bitable, etc.) is **owned by the app**, not by the user who requested it. The user will only have read access by default and cannot edit.
+
+To fix this, **always transfer ownership** to the requesting user after creating a resource:
+
+```bash
+# After creating a doc
+npx @mission-ai/lark-cli drive transfer-owner DOC_TOKEN docx openid USER_OPEN_ID
+
+# After creating a spreadsheet
+npx @mission-ai/lark-cli sheets transfer-owner SHEET_TOKEN openid USER_OPEN_ID
+
+# After creating a bitable
+npx @mission-ai/lark-cli bitable transfer-owner APP_TOKEN openid USER_OPEN_ID
+```
+
+**The user's OpenID (Lark User ID) is required for this step.** If the user has not provided their OpenID, you must ask for it before creating any resource. Without it, the user will be unable to edit what was created on their behalf.
+
+How to find OpenID: The user can find it in their Lark admin console, or you can look it up if you have access to the Lark contact API.
 
 ## Output Convention
 
@@ -75,7 +96,6 @@ npx @mission-ai/lark-cli sheets list-records APP_TOKEN TABLE_ID --page-size 100 
 |--------|------|-------------|-------------|
 | `doc` | 8 | Cloud document CRUD, block ops, export/download | Read/write/export Lark Docs |
 | `wiki` | 4 | Knowledge base spaces and nodes | Manage wiki structure |
-| `chat` | 4 | Group chat management and history | Create chats, read messages, manage members |
 | `bitable` | 12 | Multi-dimensional table (Airtable-like) | Structured data CRUD, field management |
 | `sheets` | 14 | Spreadsheets | Cell read/write, sheet management, find/replace |
 | `drive` | 6 | File permissions + media transfer | Upload/download files, manage sharing |
@@ -112,19 +132,6 @@ Manage knowledge base spaces and wiki nodes.
 | `create-node` | Add a document to a wiki space |
 
 Read `references/wiki.md` for full parameter details.
-
-### chat (4 commands)
-
-Manage group chats, members, and message history.
-
-| Command | Description |
-|---------|-------------|
-| `create` | Create a new group chat |
-| `members` | List chat members |
-| `history` | Get message history |
-| `add-members` | Add members to a chat |
-
-Read `references/chat.md` for full parameter details.
 
 ### bitable (12 commands)
 
@@ -225,6 +232,9 @@ Read `references/calendar.md` for full parameter details.
 ```bash
 # Create doc
 DOC=$(npx @mission-ai/lark-cli doc create --title "Meeting Notes" --folder FOLDER_TOKEN | jq -r '.document.document_id')
+
+# Transfer ownership to the user (required, otherwise user can only read)
+npx @mission-ai/lark-cli drive transfer-owner "$DOC" docx openid USER_OPEN_ID
 
 # Add to wiki
 npx @mission-ai/lark-cli wiki create-node SPACE_ID docx "$DOC" --title "Meeting Notes"
