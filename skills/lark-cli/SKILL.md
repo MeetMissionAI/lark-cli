@@ -40,7 +40,16 @@ Optionally, override the base URL for Feishu (China) deployments:
 export LARK_BASE_URL="https://open.feishu.cn/open-apis"   # default is larksuite.com
 ```
 
-## Ownership Transfer After Creation (Important)
+## Critical: App vs User Visibility
+
+Because the CLI uses `tenant_access_token`, everything is created **as the app**, not as the user. This has two major consequences:
+
+1. **Documents/Spreadsheets/Bitables**: Created resources are owned by the app. The user can only read them. → **Transfer ownership** after creation (see below).
+2. **Calendar events**: Events created on the app's primary calendar are **completely invisible** to users. → **NEVER create events on the app's primary calendar.** Always create a shared calendar first, grant the user access, then create events there. See "Creating calendar events for a user" in Common Patterns below.
+
+**The user's OpenID (`ou_xxx`) is required for both workflows.** If the user has not provided their OpenID, you must ask for it before creating any resource or calendar event.
+
+## Ownership Transfer After Creation
 
 Because the CLI uses `tenant_access_token`, any resource created (doc, spreadsheet, bitable, etc.) is **owned by the app**, not by the user who requested it. The user will only have read access by default and cannot edit.
 
@@ -250,18 +259,36 @@ npx @mission-ai/lark-cli sheets read SHEET_TOKEN 'SheetId!A1:D10'
 npx @mission-ai/lark-cli sheets append SHEET_TOKEN 'SheetId!A1:D1' '[["Alice",30,"Engineer","2024-01-15"]]'
 ```
 
-### Scheduling a calendar event
+### Creating calendar events for a user (CRITICAL WORKFLOW)
+
+Because the CLI uses `tenant_access_token`, the app has its own primary calendar that is **invisible to users**. You **MUST NOT** create events on the app's primary calendar — the user will never see them.
+
+**Required steps — follow this exact order:**
 
 ```bash
-CAL_ID="primary_calendar_id"
+# 1. Create a shared calendar (visible to both the app and the user)
+CAL=$(npx @mission-ai/lark-cli calendar create --summary "Project Schedule" | jq -r '.calendar.calendar_id')
 
-# Create event (timestamps are Unix seconds)
-npx @mission-ai/lark-cli calendar create-event "$CAL_ID" '{
+# 2. Grant the user "owner" role on the calendar so they can see and manage it
+npx @mission-ai/lark-cli calendar create-acl "$CAL" '{"role":"owner","scope":{"type":"user","user_id":"ou_USER_OPEN_ID"}}'
+
+# 3. Subscribe the calendar so it appears in the app's calendar list (required for creating events)
+npx @mission-ai/lark-cli calendar subscribe "$CAL"
+
+# 4. NOW create events on the shared calendar
+npx @mission-ai/lark-cli calendar create-event "$CAL" '{
   "summary": "Team Standup",
   "start_time": {"timestamp": "1700000000"},
   "end_time": {"timestamp": "1700003600"}
 }'
 ```
+
+**Rules:**
+- **NEVER** use the app's primary calendar ID for creating events meant for users
+- **ALWAYS** create a shared calendar first, then grant user access, then create events
+- The user's OpenID (`ou_xxx`) is required — ask for it if not provided
+- If creating multiple events for the same user, reuse the same shared calendar — do NOT create a new calendar for each event
+- Grant `owner` role (not `reader` or `writer`) so the user has full control
 
 ### Managing bitable records
 

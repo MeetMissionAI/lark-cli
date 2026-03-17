@@ -2,6 +2,8 @@
 
 Manages calendars, events, attendees, ACLs, freebusy, and timeoff events.
 
+> **WARNING**: NEVER create events on the app's primary calendar — users cannot see them. Always create a shared calendar first, grant the user `owner` access via `create-acl`, subscribe to it, then create events there. See SKILL.md "Common Patterns" for the full workflow.
+
 Key concepts:
 - **Calendar ID** (`calendarId`) — Unique ID of a calendar
 - **Event ID** (`eventId`) — Unique ID of an event within a calendar
