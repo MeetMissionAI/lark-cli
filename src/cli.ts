@@ -10,6 +10,7 @@ const MODULE_LOADERS: Record<string, () => Promise<{ register: (client: LarkClie
   bitable: () => import('./commands/bitable.js'),
   sheets: () => import('./commands/sheets.js'),
   drive: () => import('./commands/drive.js'),
+  calendar: () => import('./commands/calendar.js'),
 };
 
 function parseArgs(argv: string[]): {

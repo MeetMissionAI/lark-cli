@@ -30,7 +30,8 @@ src/
     ├── chat.ts            ← group chat (4 commands)
     ├── bitable.ts         ← multi-dimensional tables (12 commands)
     ├── sheets.ts          ← spreadsheets (14 commands)
-    └── drive.ts           ← permissions & media (6 commands)
+    ├── drive.ts           ← permissions & media (6 commands)
+    └── calendar.ts        ← calendar & event management (24 commands)
 tests/
 ├── e2e/                   ← E2E tests (require real Lark credentials)
 └── unit/                  ← unit tests (mock fetch)
@@ -72,6 +73,7 @@ lark-cli <module> <command> [positional-args...] [--option value]
 | `bitable` | 12 | Multi-dimensional table operations |
 | `sheets` | 14 | Spreadsheet read/write |
 | `drive` | 6 | Permissions + file upload/download |
+| `calendar` | 24 | Calendar & event management |
 
 ## Design Principles
 
