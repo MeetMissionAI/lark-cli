@@ -96,3 +96,80 @@ lark-cli <module> <command> [positional-args...] [--option value]
 - Prefer functions over classes (except LarkClient)
 - Each command file exports a `register(cli)` function
 - Errors are caught at the command layer and formatted as JSON to stderr
+- Commit messages follow Conventional Commits: `type: description`
+
+## CI/CD
+
+- **CI**: push/PR to main → build + unit test (GitHub Actions)
+- **Release**: push `v*` tag → build + test + npm publish + GitHub Release
+
+## Release Process
+
+When the user asks to release a new version, follow these steps:
+
+### 1. Pre-release checks
+
+```bash
+bun run build && bun test tests/unit/
+```
+
+Both must pass before proceeding.
+
+### 2. Determine version bump
+
+- **patch** (0.1.0 → 0.1.1): bug fixes, minor tweaks
+- **minor** (0.1.0 → 0.2.0): new commands, new modules, non-breaking features
+- **major** (0.1.0 → 1.0.0): breaking changes to CLI interface or output format
+
+If unclear, ask the user which bump to use.
+
+### 3. Write changelog entry
+
+Review commits since last tag to generate the changelog:
+
+```bash
+git log $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD --oneline
+```
+
+Group changes into these categories (omit empty categories):
+
+```
+### New Features
+- **module**: description
+
+### Bug Fixes
+- **module**: description
+
+### Other Changes
+- description
+```
+
+Rules:
+- Each line maps to one or more commits, written in user-facing language (not commit messages verbatim)
+- Prefix with the affected module in bold when applicable (e.g., `**calendar**:`)
+- Keep descriptions concise — one line per item
+
+### 4. Bump version and tag
+
+```bash
+npm version <patch|minor|major>
+```
+
+This updates `package.json`, creates a git commit and tag automatically.
+
+### 5. Push to trigger release
+
+```bash
+git push --follow-tags
+```
+
+This triggers the release workflow which will:
+- Build and test
+- Publish to npm (`@mission-ai/lark-cli`)
+- Create a GitHub Release with auto-generated release notes
+
+### 6. Verify
+
+After pushing, remind the user to check:
+- GitHub Actions tab for workflow status
+- npm: `npm view @mission-ai/lark-cli version`
