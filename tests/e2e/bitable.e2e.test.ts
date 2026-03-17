@@ -1,6 +1,8 @@
-import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
+import { describe, test, expect, beforeAll, afterAll, setDefaultTimeout } from 'bun:test';
 import { hasCredentials, createClient, testId } from './setup.js';
 import { register } from '../../src/commands/bitable.js';
+
+setDefaultTimeout(15_000);
 
 describe.skipIf(!hasCredentials)('bitable E2E', () => {
   const client = createClient();
