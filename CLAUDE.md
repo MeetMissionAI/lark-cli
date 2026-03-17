@@ -4,7 +4,7 @@ Standalone Lark Open API CLI tool designed for AI Agents.
 
 ## Project Purpose
 
-A general-purpose Lark CLI wrapper around Feishu/Lark Open Platform APIs. Zero coupling with any business framework (NestJS, Stella, etc.). Can be invoked via bash by any Agent (Claude Code, Stella, or others).
+A general-purpose Lark CLI wrapper around Feishu/Lark Open Platform APIs. Zero coupling with any business framework. Can be invoked via bash by any AI Agent or automation tool.
 
 ## Tech Stack
 

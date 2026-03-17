@@ -110,14 +110,14 @@ export type CommandMap = Record<string, CommandHandler>;
 
 **Step 2: Create src/client.ts**
 
-Port from Stella's `lark-token.service.ts` + `lark-api-client.service.ts`, stripping all NestJS decorators. Key behaviors:
+Implement a standalone Lark HTTP client. Key behaviors:
 - `getToken()` — POST to `/auth/v3/tenant_access_token/internal`, cache result
 - `get/post/put/patch/delete` — attach Bearer token, unwrap `{code,msg,data}` envelope
 - `downloadBinary(path, outputPath)` — stream to file via `node:fs`
 - `uploadFile(path, filePath, meta)` — multipart FormData upload
 - `request()` — internal method shared by all HTTP verbs
 
-Reference: `stella/apps/server/src/lark-client/lark-api-client.service.ts` (lines 61-105 for `request()` pattern, lines 137-168 for `uploadImage()` pattern, lines 228-250 for `downloadBinary()` pattern).
+Reference: Lark Open Platform docs for tenant_access_token, docx, bitable, sheets, wiki, chat, drive APIs.
 
 ```typescript
 import { writeFile } from 'node:fs/promises';
@@ -556,7 +556,7 @@ git commit -m "feat: add E2E test setup with credential check and helpers"
 
 **Step 1: Implement all 12 bitable commands**
 
-Port handlers from Stella's `bitable-mcp-server.ts` (file: `stella/apps/server/src/claude/mcp/bitable-mcp-server.ts`). Strip the MCP `tool()` wrapper and `{content:[{type:'text',...}]}` return format — just return the raw API response data.
+Implement all 12 bitable command handlers. Each handler calls the Lark Bitable API and returns the raw response data.
 
 Each handler follows the pattern:
 ```typescript
@@ -568,7 +568,7 @@ Each handler follows the pattern:
 },
 ```
 
-Reference API paths from `bitable-mcp-server.ts`:
+Lark Bitable API paths:
 - `POST /bitable/v1/apps` — create app
 - `POST /bitable/v1/apps/{appToken}/tables/batch_create` — create tables
 - `POST /bitable/v1/apps/{appToken}/tables/batch_delete` — delete tables
@@ -672,7 +672,7 @@ git commit -m "feat: implement bitable module with 12 commands and E2E tests"
 
 **Step 1: Implement all 14 sheets commands**
 
-Port from Stella's `sheets-mcp-server.ts`. Reference API paths:
+Implement all 14 sheets command handlers. Lark Sheets API paths:
 - `POST /sheets/v3/spreadsheets` — create
 - `GET /sheets/v2/spreadsheets/{token}/metainfo` — metadata
 - `GET /sheets/v2/spreadsheets/{token}/values/{range}` — read range
@@ -710,12 +710,12 @@ git commit -m "feat: implement sheets module with 14 commands and E2E tests"
 
 **Step 1: Implement all 8 doc commands**
 
-Port from Stella's `lark-mcp-server.ts` docx handlers. Key nuances:
+Implement all 8 doc command handlers using the Lark Docx API. Key nuances:
 - `doc get` — calls two APIs in parallel: `/docx/v1/documents/{id}` + `/docx/v1/documents/{id}/raw_content`
 - `doc insert` — uses `postRaw()` with `Content-Type: text/markdown` to `/docx/v1/documents/{id}/blocks/{blockId}/children`
 - `doc create-block` — POST JSON to `/docx/v1/documents/{id}/blocks/{blockId}/children`
 - `doc download` — POST to `/docx/v1/documents/{id}/tasks` (create export task), poll status, download file
-- Include `stripMergeInfo()` utility from Stella's `lark-mcp-server.ts` (lines 12-26)
+- Include `stripMergeInfo()` utility (recursively removes read-only `merge_info` from blocks)
 
 Reference API paths:
 - `GET /docx/v1/documents/{id}` — get document info
@@ -754,7 +754,7 @@ git commit -m "feat: implement doc module with 8 commands and E2E tests"
 
 **Step 1: Implement all 4 wiki commands**
 
-Reference API paths from Stella's `lark-mcp-server.ts`:
+Lark Wiki API paths:
 - `GET /wiki/v2/spaces/{spaceId}` — get space
 - `GET /wiki/v2/spaces/get_node?token={token}` — get node
 - `GET /wiki/v2/spaces/{spaceId}/nodes?parent_node_token={parent}` — list nodes
@@ -784,7 +784,7 @@ git commit -m "feat: implement wiki module with 4 commands and E2E tests"
 
 **Step 1: Implement all 4 chat commands**
 
-Reference API paths from Stella's `lark-mcp-server.ts`:
+Lark IM API paths:
 - `GET /im/v1/chats/{chatId}/messages` — chat history (with query params: page_size, start_time)
 - `GET /im/v1/chats/{chatId}/members` — chat members
 - `POST /im/v1/chats` — create chat
@@ -814,7 +814,7 @@ git commit -m "feat: implement chat module with 4 commands and E2E tests"
 
 **Step 1: Implement all 6 drive commands**
 
-Reference API paths from Stella's `lark-mcp-server.ts`:
+Lark Drive API paths:
 - `POST /drive/v1/permissions/{token}/members` + `PATCH` — update permission (need to look up exact path)
 - `POST /drive/permission/member/transfer` — transfer owner
 - `POST /drive/v1/medias/upload_all` — upload file (multipart, uses `client.uploadFile()`)

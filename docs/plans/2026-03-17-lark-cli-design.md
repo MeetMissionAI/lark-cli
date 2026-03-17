@@ -5,13 +5,9 @@
 
 ## Context
 
-Stella (our AI Agent system) integrates with Lark via MCP servers tightly coupled to NestJS. This creates three problems:
+There is no standalone, framework-agnostic CLI for the Lark Open Platform API. Existing integrations are typically coupled to specific frameworks (NestJS, Express, etc.) and cannot be reused across different AI agents or environments.
 
-1. **Portability** — Lark tools can't be used outside Stella (e.g., in Claude Code or other agents)
-2. **Coupling** — MCP server code depends on NestJS services (LarkApiClient, LarkTokenService)
-3. **Testability** — MCP tools are tested through the SDK layer, not directly
-
-This project extracts all Lark API tooling into a standalone CLI package (`@mission-ai/lark-cli`) with zero framework dependencies.
+This project builds a standalone CLI package (`@mission-ai/lark-cli`) that any AI Agent can invoke via bash — zero framework dependencies, zero coupling.
 
 ## Decisions
 
@@ -19,12 +15,12 @@ This project extracts all Lark API tooling into a standalone CLI package (`@miss
 |----------|--------|-----------|
 | Architecture | Single CLI package | 48 commands are small in total; multi-package adds versioning overhead |
 | Target user | AI Agent only | Output JSON, no interactive prompts, no colored formatting |
-| Package manager | bun | Consistent with Stella ecosystem |
+| Package manager | bun | Fast, built-in test runner, TypeScript-native |
 | Distribution | npm (`@mission-ai/lark-cli`) | `npx` invocation for any agent |
 | External dependencies | Zero | Only native fetch + node:fs |
 | Test framework | bun test | Built-in, fast, no extra dependency |
 | E2E strategy | Self-create, self-cleanup | Each test suite creates resources in setup, deletes in teardown |
-| Lark client replication | Standalone in this repo | Replicate token + HTTP logic from Stella's LarkTokenService/LarkApiClient |
+| Lark client | Standalone in this repo | Self-contained token + HTTP logic, no external dependencies |
 
 ## Architecture
 
@@ -236,13 +232,12 @@ afterAll:
   → delete the entire Bitable app (cascades tables/records)
 ```
 
-## Migration from Stella
+## Integration
 
-After this CLI is published, Stella will:
+After this CLI is published, any AI Agent can invoke it via:
 
-1. Create thin skill wrappers that invoke `npx @mission-ai/lark-cli`
-2. Remove `bitable-mcp-server.ts`, `sheets-mcp-server.ts`
-3. Remove docx/wiki/chat/permission/media tools from `lark-mcp-server.ts`
-4. Remove the now-empty `lark-mcp-server.ts` if all tools are migrated
+```bash
+npx @mission-ai/lark-cli <module> <command> [args...]
+```
 
-This migration is out of scope for this project — tracked separately in Stella.
+No framework adapters, SDKs, or wrappers needed.
