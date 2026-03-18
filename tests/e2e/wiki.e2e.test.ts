@@ -1,8 +1,9 @@
 import { describe, test, expect } from 'bun:test';
-import { hasCredentials, createClient } from './setup.js';
+import { hasCredentials, hasPermissionTestUser, testOpenId, createClient } from './setup.js';
 import { register } from '../../src/commands/wiki.js';
 
 const hasWikiSpace = hasCredentials && !!process.env.LARK_WIKI_SPACE_ID;
+const hasWikiPermissionTest = hasWikiSpace && hasPermissionTestUser && !!process.env.LARK_WIKI_NODE_TOKEN;
 
 describe.skipIf(!hasWikiSpace)('wiki E2E', () => {
   const client = createClient();
@@ -19,5 +20,30 @@ describe.skipIf(!hasWikiSpace)('wiki E2E', () => {
     const result = await commands['list-nodes']([spaceId], {}) as any;
     expect(result.items).toBeDefined();
     expect(Array.isArray(result.items)).toBe(true);
+  });
+
+  describe.skipIf(!hasWikiPermissionTest)('permissions', () => {
+    const nodeToken = process.env.LARK_WIKI_NODE_TOKEN!;
+
+    test('add, list, update, remove permission lifecycle', async () => {
+      const added = await commands['add-permission'](
+        [nodeToken, 'openid', testOpenId, 'view'],
+        {},
+      ) as any;
+      expect(added.member).toBeDefined();
+
+      const listed = await commands['list-permissions']([nodeToken], {}) as any;
+      expect(listed.items).toBeDefined();
+
+      await commands['update-permission'](
+        [nodeToken, 'openid', testOpenId, 'edit'],
+        {},
+      );
+
+      await commands['remove-permission'](
+        [nodeToken, 'openid', testOpenId],
+        {},
+      );
+    });
   });
 });

@@ -25,12 +25,13 @@ src/
 ├── client.ts              ← Lark HTTP client (token + request)
 ├── types.ts               ← shared type definitions
 └── commands/
-    ├── doc.ts             ← cloud documents (8 commands)
-    ├── wiki.ts            ← knowledge base (4 commands)
+    ├── permission.ts      ← shared permission commands factory (5 commands per module)
+    ├── doc.ts             ← cloud documents (13 commands)
+    ├── wiki.ts            ← knowledge base (9 commands)
     ├── chat.ts            ← group chat (4 commands)
-    ├── bitable.ts         ← multi-dimensional tables (12 commands)
-    ├── sheets.ts          ← spreadsheets (14 commands)
-    ├── drive.ts           ← permissions & media (6 commands)
+    ├── bitable.ts         ← multi-dimensional tables (16 commands)
+    ├── sheets.ts          ← spreadsheets (18 commands)
+    ├── drive.ts           ← file upload/download + permissions (9 commands)
     └── calendar.ts        ← calendar & event management (24 commands)
 tests/
 ├── e2e/                   ← E2E tests (require real Lark credentials)
@@ -52,6 +53,8 @@ bun run test:e2e           # run E2E tests (requires env vars)
 LARK_APP_ID        # required — Lark app ID
 LARK_APP_SECRET    # required — Lark app secret
 LARK_BASE_URL      # optional — API base URL (default: https://open.larksuite.com/open-apis)
+LARK_TEST_OPEN_ID  # optional — open_id for permission E2E tests
+LARK_WIKI_NODE_TOKEN # optional — wiki node token for wiki permission E2E tests
 ```
 
 ## CLI Invocation
@@ -67,12 +70,12 @@ lark-cli <module> <command> [positional-args...] [--option value]
 
 | Module | Commands | Description |
 |--------|----------|-------------|
-| `doc` | 8 | Cloud document CRUD + download |
-| `wiki` | 4 | Knowledge base node management |
+| `doc` | 13 | Cloud document CRUD + download + permissions |
+| `wiki` | 9 | Knowledge base node management + permissions |
 | `chat` | 4 | Chat history/members/creation |
-| `bitable` | 12 | Multi-dimensional table operations |
-| `sheets` | 14 | Spreadsheet read/write |
-| `drive` | 6 | Permissions + file upload/download |
+| `bitable` | 16 | Multi-dimensional table operations + permissions |
+| `sheets` | 18 | Spreadsheet read/write + permissions |
+| `drive` | 9 | File upload/download + permissions |
 | `calendar` | 24 | Calendar & event management |
 
 ## Design Principles

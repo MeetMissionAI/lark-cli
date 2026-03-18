@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
-import { hasCredentials, createClient, testId } from './setup.js';
+import { hasCredentials, hasPermissionTestUser, testOpenId, createClient, testId } from './setup.js';
 import { register } from '../../src/commands/sheets.js';
 
 describe.skipIf(!hasCredentials)('sheets E2E', () => {
@@ -51,5 +51,28 @@ describe.skipIf(!hasCredentials)('sheets E2E', () => {
     expect(newSheetId).toBeDefined();
 
     await commands['delete-sheet']([token, newSheetId], {});
+  });
+
+  describe.skipIf(!hasPermissionTestUser)('permissions', () => {
+    test('add, list, update, remove permission lifecycle', async () => {
+      const added = await commands['add-permission'](
+        [token, 'openid', testOpenId, 'view'],
+        {},
+      ) as any;
+      expect(added.member).toBeDefined();
+
+      const listed = await commands['list-permissions']([token], {}) as any;
+      expect(listed.items).toBeDefined();
+
+      await commands['update-permission'](
+        [token, 'openid', testOpenId, 'edit'],
+        {},
+      );
+
+      await commands['remove-permission'](
+        [token, 'openid', testOpenId],
+        {},
+      );
+    });
   });
 });

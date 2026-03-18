@@ -1,30 +1,10 @@
 import type { LarkClient } from '../client.js';
 import type { CommandMap } from '../types.js';
+import { createPermissionCommands } from './permission.js';
 
 export function register(client: LarkClient): CommandMap {
   return {
-    'update-permission': async (args, _flags) => {
-      const [token, type, memberId, perm] = args;
-      return client.put(
-        `/drive/v1/permissions/${token}/members/${memberId}?type=${type}`,
-        {
-          member_type: 'openid',
-          perm,
-        },
-      );
-    },
-
-    'transfer-owner': async (args, _flags) => {
-      const [token, type, memberType, memberId] = args;
-      return client.post('/drive/permission/member/transfer', {
-        token,
-        type,
-        owner: {
-          member_type: memberType,
-          member_id: memberId,
-        },
-      });
-    },
+    ...createPermissionCommands(client, 'file'),
 
     'upload': async (args, flags) => {
       const [filePath] = args;

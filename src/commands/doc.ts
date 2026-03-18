@@ -2,6 +2,7 @@ import { mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import type { LarkClient } from '../client.js';
 import type { CommandMap } from '../types.js';
+import { createPermissionCommands } from './permission.js';
 
 function stripMergeInfo(blocks: any[]): any[] {
   return blocks.map((block) => {
@@ -19,6 +20,8 @@ function stripMergeInfo(blocks: any[]): any[] {
 
 export function register(client: LarkClient): CommandMap {
   return {
+    ...createPermissionCommands(client, 'docx'),
+
     'get': async (args, _flags) => {
       const [documentId] = args;
       const [docInfo, rawContent] = await Promise.all([

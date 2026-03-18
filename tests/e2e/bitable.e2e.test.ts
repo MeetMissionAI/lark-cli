@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll, afterAll, setDefaultTimeout } from 'bun:test';
-import { hasCredentials, createClient, testId } from './setup.js';
+import { hasCredentials, hasPermissionTestUser, testOpenId, createClient, testId } from './setup.js';
 import { register } from '../../src/commands/bitable.js';
 
 setDefaultTimeout(15_000);
@@ -51,5 +51,28 @@ describe.skipIf(!hasCredentials)('bitable E2E', () => {
     await commands['update-records']([appToken, tableId, updates], {});
 
     await commands['delete-records']([appToken, tableId, recordId], {});
+  });
+
+  describe.skipIf(!hasPermissionTestUser)('permissions', () => {
+    test('add, list, update, remove permission lifecycle', async () => {
+      const added = await commands['add-permission'](
+        [appToken, 'openid', testOpenId, 'view'],
+        {},
+      ) as any;
+      expect(added.member).toBeDefined();
+
+      const listed = await commands['list-permissions']([appToken], {}) as any;
+      expect(listed.items).toBeDefined();
+
+      await commands['update-permission'](
+        [appToken, 'openid', testOpenId, 'edit'],
+        {},
+      );
+
+      await commands['remove-permission'](
+        [appToken, 'openid', testOpenId],
+        {},
+      );
+    });
   });
 });

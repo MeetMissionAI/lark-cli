@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeAll } from 'bun:test';
-import { hasCredentials, createClient, testId } from './setup.js';
+import { hasCredentials, hasPermissionTestUser, testOpenId, createClient, testId } from './setup.js';
 import { register } from '../../src/commands/doc.js';
 
 describe.skipIf(!hasCredentials)('doc E2E', () => {
@@ -35,5 +35,32 @@ describe.skipIf(!hasCredentials)('doc E2E', () => {
     // Verify blocks were added
     const blocks = await commands['get-blocks']([documentId], {}) as any;
     expect(blocks.items.length).toBeGreaterThan(1);
+  });
+
+  describe.skipIf(!hasPermissionTestUser)('permissions', () => {
+    test('add, list, update, remove permission lifecycle', async () => {
+      // add
+      const added = await commands['add-permission'](
+        [documentId, 'openid', testOpenId, 'view'],
+        {},
+      ) as any;
+      expect(added.member).toBeDefined();
+
+      // list
+      const listed = await commands['list-permissions']([documentId], {}) as any;
+      expect(listed.items).toBeDefined();
+
+      // update
+      await commands['update-permission'](
+        [documentId, 'openid', testOpenId, 'edit'],
+        {},
+      );
+
+      // remove
+      await commands['remove-permission'](
+        [documentId, 'openid', testOpenId],
+        {},
+      );
+    });
   });
 });

@@ -1,8 +1,10 @@
 import type { LarkClient } from '../client.js';
 import type { CommandMap } from '../types.js';
+import { createPermissionCommands } from './permission.js';
 
 export function register(client: LarkClient): CommandMap {
   return {
+    ...createPermissionCommands(client, 'sheet'),
     'create': async (_args, flags) => {
       const body: Record<string, string> = {};
       if (flags.title) body.title = flags.title;
@@ -129,16 +131,5 @@ export function register(client: LarkClient): CommandMap {
       );
     },
 
-    'transfer-owner': async (args, _flags) => {
-      const [token, memberType, memberId] = args;
-      return client.post('/drive/permission/member/transfer', {
-        token,
-        type: 'sheet',
-        owner: {
-          member_type: memberType,
-          member_id: memberId,
-        },
-      });
-    },
   };
 }

@@ -1,8 +1,10 @@
 import type { LarkClient } from '../client.js';
 import type { CommandMap } from '../types.js';
+import { createPermissionCommands } from './permission.js';
 
 export function register(client: LarkClient): CommandMap {
   return {
+    ...createPermissionCommands(client, 'wiki'),
     'get-space': async (args, _flags) => {
       const [spaceId] = args;
       return client.get(`/wiki/v2/spaces/${spaceId}`);
