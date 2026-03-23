@@ -69,6 +69,9 @@ lark-cli wiki get-space <spaceId>
 lark-cli wiki get-node <token>
 lark-cli wiki list-nodes <spaceId> [--parent <parentToken>]
 lark-cli wiki create-node <spaceId> <objType> <objToken> [--parent <parentToken>]
+lark-cli wiki list-children <spaceId> <parentNodeToken> [--page-size <n>] [--page-token <token>]
+lark-cli wiki move-node <spaceId> <nodeToken> [--target-parent-token <token>] [--target-space-id <id>]
+lark-cli wiki update-title <spaceId> <nodeToken> <title>
 ```
 
 ### chat — Group Chat

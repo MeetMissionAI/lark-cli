@@ -62,3 +62,54 @@ npx @mission-ai/lark-cli wiki create-node <spaceId> <objType> <objToken> [--pare
 - `--title` — Display title in wiki
 
 **Output:** Created node info
+
+## list-children
+
+List child nodes of a specific parent node in a wiki space (paginated).
+
+```bash
+npx @mission-ai/lark-cli wiki list-children <spaceId> <parentNodeToken> [--page-token T] [--page-size N]
+```
+
+**Args:**
+- `spaceId` — Wiki space ID
+- `parentNodeToken` — Parent node token
+
+**Flags:**
+- `--page-token` — Pagination token
+- `--page-size` — Page size (max 50)
+
+**Output:** `{ items: [...], page_token, has_more }`
+
+## move-node
+
+Move a wiki node to a different parent or space. Moves child nodes together.
+
+```bash
+npx @mission-ai/lark-cli wiki move-node <spaceId> <nodeToken> [--target-parent-token TOKEN] [--target-space-id ID]
+```
+
+**Args:**
+- `spaceId` — Source wiki space ID
+- `nodeToken` — Node token to move
+
+**Flags:**
+- `--target-parent-token` — Destination parent node token
+- `--target-space-id` — Destination wiki space ID (for cross-space moves)
+
+**Output:** Moved node info
+
+## update-title
+
+Update the title of a wiki node. Supports doc, docx, and shortcut nodes only.
+
+```bash
+npx @mission-ai/lark-cli wiki update-title <spaceId> <nodeToken> <title>
+```
+
+**Args:**
+- `spaceId` — Wiki space ID
+- `nodeToken` — Node token
+- `title` — New title
+
+**Output:** `{}`

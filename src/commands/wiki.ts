@@ -35,5 +35,28 @@ export function register(client: LarkClient): CommandMap {
       if (flags.title) body.title = flags.title;
       return client.post(`/wiki/v2/spaces/${spaceId}/nodes`, body);
     },
+
+    'list-children': async (args, flags) => {
+      const [spaceId, parentNodeToken] = args;
+      const query: Record<string, string | undefined> = {
+        parent_node_token: parentNodeToken,
+      };
+      if (flags['page-token']) query.page_token = flags['page-token'];
+      if (flags['page-size']) query.page_size = flags['page-size'];
+      return client.get(`/wiki/v2/spaces/${spaceId}/nodes`, query);
+    },
+
+    'move-node': async (args, flags) => {
+      const [spaceId, nodeToken] = args;
+      const body: Record<string, any> = {};
+      if (flags['target-parent-token']) body.target_parent_token = flags['target-parent-token'];
+      if (flags['target-space-id']) body.target_space_id = flags['target-space-id'];
+      return client.post(`/wiki/v2/spaces/${spaceId}/nodes/${nodeToken}/move`, body);
+    },
+
+    'update-title': async (args, _flags) => {
+      const [spaceId, nodeToken, title] = args;
+      return client.post(`/wiki/v2/spaces/${spaceId}/nodes/${nodeToken}/update_title`, { title });
+    },
   };
 }

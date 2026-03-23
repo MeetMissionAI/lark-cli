@@ -27,7 +27,7 @@ src/
 └── commands/
     ├── permission.ts      ← shared permission commands factory (5 commands per module)
     ├── doc.ts             ← cloud documents (13 commands)
-    ├── wiki.ts            ← knowledge base (9 commands)
+    ├── wiki.ts            ← knowledge base (12 commands)
     ├── chat.ts            ← group chat (4 commands)
     ├── bitable.ts         ← multi-dimensional tables (16 commands)
     ├── sheets.ts          ← spreadsheets (18 commands)
@@ -71,7 +71,7 @@ lark-cli <module> <command> [positional-args...] [--option value]
 | Module | Commands | Description |
 |--------|----------|-------------|
 | `doc` | 13 | Cloud document CRUD + download + permissions |
-| `wiki` | 9 | Knowledge base node management + permissions |
+| `wiki` | 12 | Knowledge base node management + permissions |
 | `chat` | 4 | Chat history/members/creation |
 | `bitable` | 16 | Multi-dimensional table operations + permissions |
 | `sheets` | 18 | Spreadsheet read/write + permissions |

@@ -2,7 +2,7 @@
 name: lark-cli
 description: >
   Use the @mission-ai/lark-cli tool to interact with Lark/Feishu Open Platform APIs via command line.
-  This skill covers 6 modules (doc, wiki, bitable, sheets, drive, calendar) with 68 commands total.
+  This skill covers 6 modules (doc, wiki, bitable, sheets, drive, calendar) with 71 commands total.
   Use this skill whenever you need to: read/write Lark documents, manage spreadsheets or multi-dimensional tables,
   operate on wikis, handle file uploads/downloads/permissions, or manage calendars and events.
   Also use when the user mentions Feishu, Lark, 飞书, or any Lark workspace automation tasks.
@@ -104,7 +104,7 @@ npx @mission-ai/lark-cli sheets list-records APP_TOKEN TABLE_ID --page-size 100 
 | Module | Cmds | Description | When to Use |
 |--------|------|-------------|-------------|
 | `doc` | 8 | Cloud document CRUD, block ops, export/download | Read/write/export Lark Docs |
-| `wiki` | 4 | Knowledge base spaces and nodes | Manage wiki structure |
+| `wiki` | 7 | Knowledge base spaces and nodes | Manage wiki structure |
 | `bitable` | 12 | Multi-dimensional table (Airtable-like) | Structured data CRUD, field management |
 | `sheets` | 14 | Spreadsheets | Cell read/write, sheet management, find/replace |
 | `drive` | 6 | File permissions + media transfer | Upload/download files, manage sharing |
@@ -129,7 +129,7 @@ Manage Lark cloud documents — read content, manipulate blocks, create/export.
 
 Read `references/doc.md` for full parameter details.
 
-### wiki (4 commands)
+### wiki (7 commands)
 
 Manage knowledge base spaces and wiki nodes.
 
@@ -139,6 +139,9 @@ Manage knowledge base spaces and wiki nodes.
 | `get-node` | Get a wiki node by token |
 | `list-nodes` | List child nodes in a space |
 | `create-node` | Add a document to a wiki space |
+| `list-children` | List child nodes of a specific parent node |
+| `move-node` | Move a node to a different parent or space |
+| `update-title` | Update the title of a wiki node |
 
 Read `references/wiki.md` for full parameter details.
 
