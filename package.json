@@ -1,6 +1,6 @@
 {
   "name": "@mission-ai/lark-cli",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "[DEPRECATED] Standalone Lark Open API CLI for AI Agents — use https://github.com/larksuite/cli instead",
   "type": "module",
   "bin": {
