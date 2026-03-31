@@ -1,5 +1,10 @@
 # @mission-ai/lark-cli
 
+> [!CAUTION]
+> **This project has been deprecated.**
+> Lark has released an official CLI tool: [larksuite/cli](https://github.com/larksuite/cli).
+> Please migrate to the official CLI. This repository is archived and will no longer receive updates.
+
 A standalone CLI tool for the [Lark Open Platform](https://open.larksuite.com/) API, designed for AI Agent consumption.
 
 ## Install
